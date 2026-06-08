@@ -1,0 +1,13 @@
+{
+  "name": "skill-forge",
+  "version": "1.0.0",
+  "description": "Create production-grade agent skills that run in any harness — discoverable, behavior-driving, single-sourced, and validated.",
+  "author": {
+    "name": "Adrian",
+    "email": "admin@pertinent.ai"
+  },
+  "homepage": "https://github.com/adriancodes/skillforge",
+  "repository": "https://github.com/adriancodes/skillforge",
+  "license": "MIT",
+  "keywords": ["skills", "skill-authoring", "claude-code", "meta-skill", "agent-skills"]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "skillforge",
+  "owner": {
+    "name": "Adrian",
+    "url": "https://github.com/adriancodes"
+  },
+  "plugins": [
+    {
+      "name": "skill-forge",
+      "source": "./",
+      "description": "Create production-grade agent skills that run in any harness — discoverable, behavior-driving, single-sourced, and validated."
+    }
+  ]
+}
