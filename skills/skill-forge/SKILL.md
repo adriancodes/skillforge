@@ -35,7 +35,7 @@ A skill only works if the agent obeys it. Apply all five levers to every skill; 
 
 ## Harness Adaptation
 
-This skill, and every skill it builds, runs in any agent harness — not only Claude Code. Tool names below are Claude Code's; map each to the current harness via `references/harness-tools.md`. When a harness lacks a named tool, use that file's fallback — never skip the step. Build generated skills the same way (Portability rules in `references/rules.md`).
+This skill, and every skill it builds, runs in any agent harness. Tool names below are Claude Code's; map each via `references/harness-tools.md`, and when a harness lacks a named tool use that file's fallback — never skip the step. Build generated skills the same way (Portability rules in `references/rules.md`).
 
 ## When to Use
 
@@ -48,7 +48,7 @@ This skill, and every skill it builds, runs in any agent harness — not only Cl
 
 ## Do Not Use When
 
-- The skill needs quantitative eval iteration with a benchmark harness — use `skill-creator:skill-creator` (ships `eval-viewer/generate_review.py` and an automated description-optimization loop)
+- The skill needs *quantitative* eval — statistical pass-rates and variance across many runs, or automated description-trigger optimization — use `skill-creator:skill-creator` (ships `eval-viewer/generate_review.py` and a description-optimization loop). Skill-forge runs its own *correctness* eval loop (Phase 7); it defers only the measurement/optimization layer, and the two compose
 - The skill ships inside a Claude Code plugin manifest — use `plugin-dev:skill-development` (handles plugin packaging, `${CLAUDE_PLUGIN_ROOT}`, manifest fields). *Packaging is harness-specific; the skill content this skill produces stays harness-neutral.*
 - The user wants a one-off slash command, not a triggered skill — write a slash command instead
 - The output is a project document, not an agent instruction
@@ -72,7 +72,7 @@ Follow phases in order. Do not skip phases.
 
 **Clarify before scoping.** If the skill's purpose, triggers, boundaries, or definition of success are at all ambiguous, interview the user before drafting. Ask targeted questions until you can restate — and the user confirms — the trigger scenarios, the non-triggers, and the core behavior. Never draft from assumptions. When the user says "just make reasonable choices," proceed, but state every assumption explicitly. (If the harness has an intent-exploration skill — e.g. `superpowers:brainstorming` in Claude Code — use it.)
 
-**Offer a multiple-choice UI for the questions.** Prefer the harness's multi-option question UI (Claude Code: the AskUserQuestion tool — see `references/harness-tools.md` for other harnesses) so the user moves through the decisions by picking options instead of writing prose. Where no such UI exists, ask as a numbered list and let the user reply with a number. Give 2–4 concrete options per question, each with a one-line "why", and always leave room for a custom answer. Fall back to open-ended questions only when the choices are genuinely unbounded.
+**Offer a multiple-choice UI for the questions.** Prefer the harness's multi-option question UI (Claude Code: AskUserQuestion — see `references/harness-tools.md`) so the user picks options instead of writing prose; otherwise ask as a numbered list. Give 2–4 concrete options per question, each with a one-line "why", and leave room for a custom answer. Use open-ended questions only when the choices are genuinely unbounded.
 
 Then scope:
 
@@ -148,17 +148,18 @@ The required bulletproofing items are listed in `references/rules.md` (Bulletpro
 
 Load `references/rules.md`, then run every item in `references/validation-checklist.md` — the checklist cites the registry for authoritative values. A single "no" means the skill is not ready.
 
-### Phase 7: Test and Iterate
+### Phase 7: Eval and Iterate
 
-Use the skill on real tasks. Note where the agent struggles or deviates. Common iteration targets:
+Phase 6 validates the *document*; this phase proves the *output*. A skill can pass every structural gate and still ship a script that crashes on the first edge case — so **execute the artifact against adversarial cases; never reason about whether it works.** This is gate #8, Proven — the most-skipped step under time pressure. (Once, authoring skill-forge shipped a CSV→Markdown skill whose `is_number("")` returned `True`, right-aligning an all-blank column; re-reading never caught it, one execution did.)
 
-- Strengthen trigger phrases in description
-- Add missing negative boundaries
-- Move long sections to `references/`
-- Add failure modes discovered during use
-- Clarify ambiguous workflow steps
+Run the eval matching what the skill produces:
 
-For quantitative iteration with eval harnesses, defer to `skill-creator:skill-creator`.
+- **Ships a script or verifiable output** — write 8+ adversarial fixtures, execute the artifact on each, fix every mismatch in the *skill*, re-run all, loop until a clean pass plus two empty probe rounds. The fixture catalog and full loop live in `references/eval-loop.md`. This is the gap-closer.
+- **Discipline skill** — already proven by the Phase 5 combined-pressure re-test; do not duplicate.
+- **Reference skill** — a fresh agent performs 3 real lookups and applies each.
+- **Pure technique/workflow, no artifact** — a fresh agent dry-runs the Phase-1 trigger scenarios with no gaps.
+
+Then fold discoveries back: strengthen triggers, add missing boundaries, extract overflowing sections, document new failure modes. This loop owns *correctness*; defer quantitative pass-rate benchmarking and description-trigger optimization to `skill-creator:skill-creator` — the two compose.
 
 ## Tool Guidance
 
@@ -169,10 +170,9 @@ For quantitative iteration with eval harnesses, defer to `skill-creator:skill-cr
 
 **Avoid:**
 - `@filename` force-loading from SKILL.md — consumes context regardless of need
-- Cramming everything into SKILL.md instead of using references/
+- Cramming content into SKILL.md instead of `references/`, or duplicating a reference file inline — link instead
 - Empty directories (only create directories with content)
 - Flowcharts for reference material (use tables), code (use blocks), or linear steps (use numbered lists)
-- Duplicating reference-file content inline in SKILL.md — link instead
 
 **Constraints:**
 - No second person in the body
@@ -181,7 +181,7 @@ For quantitative iteration with eval harnesses, defer to `skill-creator:skill-cr
 
 ## Success Criteria
 
-The skill is ready when ALL of these hold. These are the seven gates by name; the authoritative gate — with failure-frequency notes — is owned by `references/rules.md` (Quality Gate) and is run in Phase 6.
+The skill is ready when ALL of these hold. These are the eight gates by name; the authoritative gate — with failure-frequency notes — is owned by `references/rules.md` (Quality Gate). Gates 1–7 are checked in Phase 6; gate 8 is proven in Phase 7.
 
 1. **Discoverable** — An agent would find this skill given only the user's natural request
 2. **Bounded** — "Do Not Use When" lists adjacent skills and forbidden contexts
@@ -190,6 +190,7 @@ The skill is ready when ALL of these hold. These are the seven gates by name; th
 5. **Lean** — SKILL.md body is within word target, depth lives in `references/`
 6. **Self-consistent** — The skill follows the rules it teaches
 7. **Positioned** — Collisions with existing skills are explicitly addressed
+8. **Proven** — If the skill ships a script or produces verifiable output, that output has been executed against adversarial fixtures and all pass (not merely reasoned about)
 
 If any answer is "no," iterate.
 
@@ -204,10 +205,8 @@ If any answer is "no," iterate.
 | Supporting files exist but aren't referenced | Add to "Additional Resources" or delete them |
 | Resources built before SKILL.md drafted | Draft body first, extract when sections overflow |
 | Discipline skill without bulletproofing | Add rationalization table, red flags, loophole closings |
-| SKILL.md crosses the word cap | Move sections to `references/`; verify links |
-| Multiple skills overlap silently | Position via "Do Not Use When" — name the competitor |
-| Inline content duplicates a reference file | Link to the reference, don't duplicate |
 | Skill teaches a structure it doesn't follow | Rewrite the skill against its own template |
+| Generated script validated only by reading it | Execute it against adversarial fixtures (Phase 7, gate #8); reasoning ships bugs that one run catches |
 
 ## Failure Modes
 
@@ -220,15 +219,16 @@ If any answer is "no," iterate.
 
 ## Additional Resources
 
-- **`references/rules.md`** — The rule registry: single source of truth for word targets, skill types, the per-type recipe, description rules, required sections, the quality gate, behavioral-force rules, and bulletproofing requirements. Every other file cites it; change a rule here and nowhere else. Loaded in Phase 6.
-- **`references/behavioral-force.md`** — The five levers that make an agent obey a skill (imperative force, positive specification, load-bearing examples, concrete anchors, position), with before/after rewrites. Apply in Phase 2.
-- **`references/harness-tools.md`** — Maps Claude Code tool names to other harnesses (Cursor, Codex, Gemini, Copilot, generic) with fallbacks. Consult whenever the skill names a tool and the harness is not Claude Code.
-- **`references/body-template.md`** — Canonical SKILL.md body template with section rationale and skill-type adaptations. Use as the literal starting point in Phase 2.
-- **`references/description-guide.md`** — Description anti-patterns, the empirical "one review vs two reviews" finding, and a description checklist. Consult in Phase 4.
-- **`references/bulletproofing-guide.md`** — Six techniques for hardening discipline skills against rationalization, plus an integration checklist. Consult in Phase 5.
-- **`references/validation-checklist.md`** — Binary pre-flight checklist run as the final gate in Phase 6.
-- **`examples/simple-skill-example.md`** — Complete single-file technique skill (~600 words). Use as a model when drafting simple skills.
-- **`examples/complex-skill-example.md`** — Complete workflow skill using `references/`, `examples/`, and `scripts/`. Use as a model when drafting complex skills.
+- **`references/rules.md`** — The rule registry: single source of truth for every invariant. Change a rule here and nowhere else. Loaded in Phase 6.
+- **`references/behavioral-force.md`** — The five levers that make an agent obey a skill, with before/after rewrites. Apply in Phase 2.
+- **`references/harness-tools.md`** — Maps Claude Code tool names to other harnesses with fallbacks. Consult when the harness is not Claude Code.
+- **`references/body-template.md`** — Canonical SKILL.md body template with skill-type adaptations. The starting point in Phase 2.
+- **`references/description-guide.md`** — Description anti-patterns and the "one review vs two reviews" finding. Consult in Phase 4.
+- **`references/bulletproofing-guide.md`** — Six techniques for hardening discipline skills. Consult in Phase 5.
+- **`references/validation-checklist.md`** — Binary pre-flight checklist, the gate in Phase 6.
+- **`references/eval-loop.md`** — The execute-don't-reason eval loop and adversarial-fixture catalog. Run in Phase 7 for gate #8 (Proven).
+- **`examples/simple-skill-example.md`** — Complete single-file technique skill. A model for simple skills.
+- **`examples/complex-skill-example.md`** — Complete workflow skill using references/, examples/, scripts/. A model for complex skills.
 
 ## Cross-Referencing Other Skills
 
@@ -242,4 +242,4 @@ Never force-load with `@` syntax — it consumes context immediately regardless 
 
 ## Above All
 
-A skill that is found but not obeyed is wasted. Before shipping any skill, drive behavior: **command, don't suggest; specify the action, don't just forbid; show one example; anchor with numbers; put what matters first and last.** Then confirm the skill follows every rule it teaches — self-consistency (gate #6) is the most commonly failed check.
+A skill that is found but not obeyed is wasted — and one that is obeyed but ships broken output is worse. Before shipping any skill, drive behavior: **command, don't suggest; specify the action, don't just forbid; show one example; anchor with numbers; put what matters first and last.** Then confirm the skill follows every rule it teaches — self-consistency (gate #6) is the most commonly failed check. Finally, if the skill emits an artifact, **execute it against adversarial cases before declaring done** (gate #8) — reasoning about correctness ships bugs that a single run catches.

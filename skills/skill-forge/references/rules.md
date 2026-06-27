@@ -81,7 +81,7 @@ The authoritative description checklist. `description-guide.md` explains the rea
 
 ## Quality Gate
 
-The seven-point gate. All must be "yes" before a skill ships. `SKILL.md` names these in Success Criteria; the authoritative list — and the order of failure frequency — lives here.
+The eight-point gate. All must be "yes" before a skill ships. `SKILL.md` names these in Success Criteria; the authoritative list — and the order of failure frequency — lives here.
 
 1. **Discoverable** — an agent would find this skill given only the user's natural request
 2. **Bounded** — states when NOT to use it, and when to stop
@@ -90,6 +90,7 @@ The seven-point gate. All must be "yes" before a skill ships. `SKILL.md` names t
 5. **Lean** — body within word target, depth in `references/`
 6. **Self-consistent** — the skill follows the rules it teaches (most commonly failed)
 7. **Positioned** — collisions with existing skills explicitly addressed in "Do Not Use When"
+8. **Proven** — if the skill ships a script or produces verifiable output, that output has been *executed* against adversarial fixtures and all pass — not merely reasoned about (see Eval Loop Requirements)
 
 ## Bulletproofing Requirements
 
@@ -104,6 +105,19 @@ Discipline skills only. `bulletproofing-guide.md` explains the techniques; this 
 - [ ] Each rationalization stated once (in the Rationalization Table); other sections reference it, never re-argue it
 - [ ] Includes a "deliver, don't lecture" instruction — state the rule once, then produce the compliant output and default to the safe pattern silently
 - [ ] **Re-tested after adding all bulletproofing — agent still complies**
+
+## Eval Loop Requirements
+
+Run in Phase 7. Proves the skill's *output* works, not just that the document is well-formed. `eval-loop.md` explains the technique and holds the adversarial-fixture catalog; this is the checklist. The eval method is type-conditional — satisfy the row matching what the skill produces.
+
+- [ ] **Script or verifiable output** — 8+ adversarial fixtures written (empty/blank, single element, delimiter-in-data, embedded newline, ragged, special chars, unicode/BOM, boundary numbers, type ambiguity); artifact **executed** against every fixture; all pass on a full re-run; failures fixed in the *skill*, never by editing the fixture to match buggy output
+- [ ] **Discipline skill** — covered by the Bulletproofing Requirements re-test above; not re-run here
+- [ ] **Reference skill** — a fresh agent performs 3 real lookups and applies each correctly
+- [ ] **Pure technique/workflow, no artifact** — a fresh agent dry-runs the Phase-1 trigger scenarios with no gaps or deviation
+- [ ] Iterated until a clean pass **plus** two consecutive probe rounds that surface no new failing case
+- [ ] Any input class left untested — and any non-obvious semantic decision the artifact makes on an ambiguous spec (sort order, tie-breaking, type coercion) — is named in the skill's Failure Modes (no silent coverage caps, no silent judgment calls)
+
+**Division of labor:** this loop owns *correctness* (does this artifact produce the right output on hard cases — qualitative, always-on, no harness). Quantitative pass-rate benchmarking and description-trigger optimization belong to `skill-creator:skill-creator`.
 
 ## Portability (Harness-Neutral)
 

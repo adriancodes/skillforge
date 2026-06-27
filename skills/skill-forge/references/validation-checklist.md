@@ -83,12 +83,16 @@ Run every item before finalizing a skill. A single "no" means the skill is not r
 - [ ] Success criteria are measurable and unambiguous
 - [ ] Skill scope is narrow — one job, not a whole profession
 
+## Eval Loop (Phase 7)
+
+- [ ] Every item in `references/rules.md` (Eval Loop Requirements) is satisfied for the matching skill type — for artifact-producing skills, the output was **executed** against adversarial fixtures and all pass
+
 ## Portability
 
 - [ ] Every Portability rule in `references/rules.md` (Portability) holds — harness-specific tools named with a generic role + fallback, no hard harness-only dependency, runs as a plain instruction document
 
-## Seven-Point Quality Gate
+## Eight-Point Quality Gate
 
-- [ ] All seven gates in `references/rules.md` (Quality Gate) answer "yes"
+- [ ] All eight gates in `references/rules.md` (Quality Gate) answer "yes" — including #8 Proven, satisfied by the Eval Loop above
 
 A single "no" means iterate. The registry notes the most commonly failed gate — #6, Self-consistent: skills that teach a structure they don't follow.
