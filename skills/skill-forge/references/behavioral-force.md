@@ -1,8 +1,8 @@
 # Writing Instructions That Drive Behavior
 
-A skill is only as good as whether the agent obeys it. Structure makes a skill *findable*; these five levers make it *followed*. Apply all five to every skill — they compound. Each lever is a rule in `rules.md` and a check in Phase 6.
+A skill is only as good as whether the agent obeys it. Structure makes a skill *findable*; these six levers make it *followed*. Apply all six to every skill — they compound. Each lever is a rule in `rules.md` and a check in Phase 6.
 
-The single highest-leverage habit: **command, don't suggest; specify the action, don't just forbid; show one example; anchor with numbers; put what matters first and last.**
+The single highest-leverage habit: **command, don't suggest; specify the action, don't just forbid; show one example; anchor with numbers; put what matters first and last; name behaviors with words the model already knows.**
 
 ## 1. Imperative force — command, never observe
 
@@ -58,7 +58,23 @@ This file is itself the demonstration: every lever above leads with a before/aft
 - Within a long section, state the binding rule first, then elaborate.
 - Close every skill with a one-line restatement of the rule that matters most.
 
-## All five at once
+## 6. Leading words — name the behavior with a pretrained concept
+
+**Anchor each behavioral concept to a compact term the model already holds** — *adversarial*, *tracer bullet*, *red/green*, *relentless* — and repeat the term, never its definition. A pretrained word carries a distributed definition for free: every occurrence recruits the same priors and pulls the agent toward the same behavior, where a paraphrase spends tokens and dilutes the anchor.
+
+| Spelled out (weak) | Leading word (strong) |
+|--------------------|----------------------|
+| "fast, deterministic, low-overhead feedback" | "a *tight* loop" |
+| "a test you are confident exercises the bug" | "the test goes *red* on the bug" |
+| "inputs chosen to break a naive implementation" | "*adversarial* fixtures" |
+
+Grade a leading word with the Pruning no-op test (`rules.md`): if the model's default already matches (*be thorough* on an already-thorough agent), the word is too weak — replace it with a stronger word (*relentless*, *exhaustive*), never with a longer explanation.
+
+Coin a new term only when no pretrained one fits: a made-up word recruits no priors, so its definition costs the tokens a pretrained word gives free.
+
+A leading word also works in the description: when the same word lives in the user's prompts, docs, and codebase, the agent links that shared language to the skill and fires it more reliably.
+
+## All six at once
 
 The same instruction, before and after applying every lever.
 
@@ -68,4 +84,4 @@ The same instruction, before and after applying every lever.
 **After:**
 > **Always write the test before the implementation.** If implementation exists before its test, delete it and start from the test. (See the worked red-green example below.)
 
-Imperative force (*Always*), a prohibition turned into a positive action (*delete it and start from the test*), a concrete trigger (*if implementation exists before its test*), an example pointer, and the binding rule stated first.
+Imperative force (*Always*), a prohibition turned into a positive action (*delete it and start from the test*), a concrete trigger (*if implementation exists before its test*), an example pointer, the binding rule stated first, and a leading word (*red-green*) anchoring the whole loop in one pretrained token.
