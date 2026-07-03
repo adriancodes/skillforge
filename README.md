@@ -11,7 +11,8 @@ Most hand-written skills fail in one of two ways: an agent never loads them (bad
 - **One home for every rule.** Word limits, required sections, the quality gate, and bulletproofing requirements live in a single rule registry (`references/rules.md`). Nothing drifts.
 - **Behavioral-force levers, enforced.** Five levers that decide whether an agent *obeys* a skill — imperative force, positive specification, load-bearing examples, concrete anchors, and position — are rules it checks, not advice it mentions.
 - **Clarify intent before building.** It interviews you (with a multiple-choice UI) until the scope, triggers, and success criteria are confirmed — so it builds what you meant, not what it guessed.
-- **A real validation gate.** Every generated skill is run against a seven-point quality gate before it ships.
+- **A real validation gate.** Every generated skill is run against an eight-point quality gate before it ships.
+- **An eval loop that runs the output.** Skills that emit a script or verifiable output are *executed* against adversarial fixtures and fixed until clean — not merely reasoned about. Reasoning ships bugs that one run catches; this loop (gate #8, "Proven") is why.
 - **Bulletproofing for discipline skills.** Rules that must hold under pressure get a rationalization table, red flags, and an escalation path — with anti-bloat and "deliver, don't lecture" guidance baked in.
 
 ---
@@ -69,7 +70,8 @@ Skill Forge will:
 2. **Scope and classify** — pick the skill type (technique, discipline, reference, or workflow) and its build recipe.
 3. **Draft** against the canonical template, applying the five behavioral-force levers.
 4. **Bulletproof** if it's a discipline skill.
-5. **Validate** against the seven-point quality gate.
+5. **Validate** against the eight-point quality gate.
+6. **Eval** — execute the generated artifact against adversarial fixtures and fix until clean (gate #8, "Proven").
 
 ---
 
@@ -79,22 +81,23 @@ The skill lives at [`skills/skill-forge/`](skills/skill-forge/):
 
 | File | Purpose |
 |------|---------|
-| `SKILL.md` | The workflow: clarify → scope → draft → extract → bulletproof → validate |
+| `SKILL.md` | The workflow: clarify → scope → draft → extract → bulletproof → validate → eval |
 | `references/rules.md` | The rule registry — single source of truth for every checked invariant |
 | `references/behavioral-force.md` | The five levers that make an agent obey a skill, with before/after rewrites |
 | `references/body-template.md` | The canonical SKILL.md template + per-type adaptations |
 | `references/description-guide.md` | How to write a description that triggers (and the anti-patterns that don't) |
 | `references/bulletproofing-guide.md` | Hardening discipline skills against rationalization |
 | `references/validation-checklist.md` | The pre-flight gate, run before any skill ships |
+| `references/eval-loop.md` | The execute-don't-reason eval loop + adversarial-fixture catalog (gate #8) |
 | `references/harness-tools.md` | Maps Claude Code tool names to other harnesses, with a fallback for each |
 
-[`CONTEXT.md`](CONTEXT.md) documents the project's own vocabulary (rule registry, behavioral force, drift, harness-neutral).
+[`CONTEXT.md`](CONTEXT.md) documents the project's own vocabulary (rule registry, behavioral force, eval loop, drift, harness-neutral).
 
 ---
 
 ## Testing a skill you build
 
-Skill Forge ships the method it was validated with. To check a skill you generate:
+Correctness is checked automatically by the built-in eval loop (gate #8). The methods below go further — measuring *lift* and *reliability* across runs, which is where a quantitative harness like `skill-creator` complements Skill Forge:
 
 - **Lift** — build it with vs. without Skill Forge; compare blind.
 - **Reliability** — generate it 3× and check the outputs are consistent.

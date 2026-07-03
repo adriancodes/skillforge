@@ -2,6 +2,8 @@
 
 The description field is the highest-leverage component of any skill. It determines whether the skill is ever triggered. An excellent skill with a poor description is an invisible skill.
 
+**This guide applies to model-invoked skills only.** A user-invoked skill (`disable-model-invocation: true` — see `references/rules.md`, Invocation) strips the description from the agent's reach: write a one-line human-facing summary instead, with trigger lists omitted.
+
 ## Format Rules
 
 - **Max length:** capped — see `references/rules.md` (the description is loaded into every conversation, so its length is bounded)
@@ -80,11 +82,11 @@ description: Use when tests use setTimeout/sleep and are flaky.
 ### Good Descriptions
 
 ```yaml
-# Trigger-focused, specific phrases, symptoms
+# Trigger-focused, specific phrases, symptoms — synonym variants capped at 2
 description: >
   Use when creating a new skill, improving an existing skill,
   or the user asks to "create a skill", "write a skill",
-  "build a skill for X". Also when skills produce inconsistent
+  "improve this skill". Also when skills produce inconsistent
   or low-quality results.
 
 # Trigger conditions only, no process summary
@@ -104,6 +106,10 @@ description: >
   or pass/fail inconsistently. Also when encountering
   "timeout", "flaky", or "hanging" test behavior.
 ```
+
+## Synonym Budget
+
+Each quoted phrase is a retrieval key, but every phrase also spends always-loaded context. Spend the budget on **distinct request branches** (create, improve, review), not on rewrites of one branch: "create a skill" and "write a skill" both earn their keep as separate keys; adding "build a skill" and "make a skill" pays permanent context for marginal recall. Cap synonym variants of a single branch at the 2 strongest (`references/rules.md`, Description Rules).
 
 ## Description Checklist
 

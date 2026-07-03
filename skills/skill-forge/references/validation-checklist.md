@@ -14,9 +14,14 @@ Run every item before finalizing a skill. A single "no" means the skill is not r
 - [ ] No empty directories (only create directories with content)
 - [ ] Name follows `references/rules.md` (Naming) — functional and unambiguous; verb-first recommended, not required
 
+## Invocation
+
+- [ ] The invocation axis was chosen deliberately in Phase 1 (`references/rules.md` → Invocation): model-invoked by default; user-invoked (`disable-model-invocation: true`) when the skill only fires by explicit request
+- [ ] A user-invoked skill carries a one-line human-facing description — Description Quality below then does not apply
+
 ## Description Quality
 
-- [ ] Every rule in `references/rules.md` (Description Rules) holds
+- [ ] Every rule in `references/rules.md` (Description Rules) holds (model-invoked skills only)
 
 ## Body: Sections
 
@@ -33,7 +38,15 @@ Run every item before finalizing a skill. A single "no" means the skill is not r
 
 ## Behavioral Force
 
-- [ ] All five levers in `references/rules.md` (Behavioral-Force Rules) hold: imperative force, positive specification, a load-bearing example, concrete anchors, and front/end positioning
+- [ ] All six levers in `references/rules.md` (Behavioral-Force Rules) hold: imperative force, positive specification, a load-bearing example, concrete anchors, front/end positioning, and leading words
+
+## Steps and Pointers
+
+- [ ] Every rule in `references/rules.md` (Steps and Pointers) holds — each workflow step ends on a checkable completion criterion, and each context pointer states when to load its target
+
+## Pruning
+
+- [ ] Every rule in `references/rules.md` (Pruning) holds — the sentence-level no-op pass was run, stale lines removed, each meaning lives in exactly one file
 
 ## Word Count
 
@@ -83,12 +96,16 @@ Run every item before finalizing a skill. A single "no" means the skill is not r
 - [ ] Success criteria are measurable and unambiguous
 - [ ] Skill scope is narrow — one job, not a whole profession
 
+## Eval Loop (Phase 7)
+
+- [ ] Every item in `references/rules.md` (Eval Loop Requirements) is satisfied for the matching skill type — for artifact-producing skills, the output was **executed** against adversarial fixtures and all pass
+
 ## Portability
 
 - [ ] Every Portability rule in `references/rules.md` (Portability) holds — harness-specific tools named with a generic role + fallback, no hard harness-only dependency, runs as a plain instruction document
 
-## Seven-Point Quality Gate
+## Eight-Point Quality Gate
 
-- [ ] All seven gates in `references/rules.md` (Quality Gate) answer "yes"
+- [ ] All eight gates in `references/rules.md` (Quality Gate) answer "yes" — including #8 Proven, satisfied by the Eval Loop above
 
 A single "no" means iterate. The registry notes the most commonly failed gate — #6, Self-consistent: skills that teach a structure they don't follow.

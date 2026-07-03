@@ -43,22 +43,31 @@ Everything a type needs, in one row. Build to the row for the chosen type. The w
 
 ## Behavioral-Force Rules
 
-The five levers that decide whether an agent obeys a skill. Apply all five to every skill. `behavioral-force.md` explains and demonstrates each.
+The six levers that decide whether an agent obeys a skill. Apply all six to every skill. `behavioral-force.md` explains and demonstrates each.
 
 - [ ] **Imperative force** — instructions are verb-first commands (Always / Never / `<verb>`), never observations ("is helpful", "consider", "usually")
 - [ ] **Positive specification** — behavioral guidance states the action to take; every prohibition is paired with its replacement ("Never X; do Y instead"). Scope boundaries ("Do Not Use When") are the one allowed exception
 - [ ] **Load-bearing example** — at least one concrete, complete, runnable example demonstrates the core behavior
 - [ ] **Concrete anchors** — vague qualifiers are replaced with measurable anchors where a limit is meant ("3 sentences or fewer", not "concise")
 - [ ] **Position** — the most critical instruction sits in the first fifth and the last fifth of the body, and is restated at the end
+- [ ] **Leading words** — each behavioral concept is named with a compact term the model already holds from pretraining (*adversarial*, *tight*, *red/green*) and repeated as that term, never re-explained; a leading word too weak to change behavior ("be thorough") is replaced with a stronger word ("relentless"), not with a longer sentence
+
+## Invocation
+
+Choose the invocation axis in Phase 1, before drafting. Each choice spends a different load; pick the cheaper one for how the skill actually fires.
+
+- **Model-invoked** (default) — the skill keeps a trigger `description`, so the agent fires it autonomously and other skills can reach it by name. Costs *context load*: the description is loaded into every conversation whether or not the skill fires. Choose when the agent must discover the skill from a natural user request.
+- **User-invoked** — set `disable-model-invocation: true` in frontmatter. Only the human typing the skill's name can fire it; zero context load, but the human must remember it exists (*cognitive load*). Choose when the skill only ever fires by explicit request (release rituals, personal checklists, meta-tools). The `description` becomes a human-facing one-liner; the Description Rules below do not apply.
+- **Router skill** — when user-invoked skills multiply past easy recall, add one skill that names each and when to reach for it, so the human remembers one name instead of many.
 
 ## Description Rules
 
-The authoritative description checklist. `description-guide.md` explains the reasoning behind each.
+The authoritative description checklist for **model-invoked** skills (user-invoked skills carry a one-line human-facing summary instead — see Invocation). `description-guide.md` explains the reasoning behind each.
 
 - [ ] Starts with "Use when…" or "This skill should be used when…"
 - [ ] Written in third person (not "you" or "I")
 - [ ] Under 500 characters total (loaded into every conversation, so length is bounded)
-- [ ] Contains at least 2 quoted trigger phrases users would say
+- [ ] Contains 2–4 quoted trigger phrases users would say, covering distinct request branches — synonym rewrites of a single branch are capped at the 2 strongest
 - [ ] Contains at least 1 symptom, error message, or keyword
 - [ ] Does NOT summarize the skill's workflow or process
 - [ ] Does NOT describe what the skill does (only when to use it)
@@ -71,6 +80,23 @@ The authoritative description checklist. `description-guide.md` explains the rea
 
 **Recommended:** verb-first active voice (`creating-X`, not `X-creator`). It sits closest to how requests are phrased and keeps a library consistent — but it is a convention, not a measured law. A functional, unambiguous noun name satisfies the requirement; verb-first is just the form that most reliably produces one.
 
+## Steps and Pointers
+
+Rules for workflow steps and file references. `body-template.md` (Writing Workflow Steps, Writing Context Pointers) demonstrates each.
+
+- [ ] Every workflow step ends on a **checkable completion criterion** — the agent can tell done from not-done ("all fixtures pass on a full re-run", not "tests look good")
+- [ ] Criteria that gate thoroughness are **exhaustive** ("every modified file accounted for", not "produce a change list")
+- [ ] Every context pointer states *when* to load its target, not only what the target contains
+- [ ] A must-have file behind an unreliable pointer is fixed by sharpening the pointer's wording first; the material is inlined only if sharpening fails
+
+## Pruning
+
+Run in Phase 3 after drafting, and again whenever reviewing an existing skill.
+
+- [ ] **No-op test** — every sentence changes agent behavior versus the model's default; failing sentences are deleted whole, never trimmed ("handle edge cases carefully" fails; "test the empty string — it classifies as numeric" passes)
+- [ ] **Relevance** — every line still bears on what the skill does today; stale accumulated layers (sediment) are removed, not written around
+- [ ] **Single source of truth** — each rule, number, and list lives in exactly one file; other files point to it, never restate it
+
 ## Required Sections
 
 **Required (7):** Overview · When to Use · Do Not Use When · Workflow · Success Criteria · Common Mistakes · Failure Modes
@@ -81,7 +107,7 @@ The authoritative description checklist. `description-guide.md` explains the rea
 
 ## Quality Gate
 
-The seven-point gate. All must be "yes" before a skill ships. `SKILL.md` names these in Success Criteria; the authoritative list — and the order of failure frequency — lives here.
+The eight-point gate. All must be "yes" before a skill ships. `SKILL.md` names these in Success Criteria; the authoritative list — and the order of failure frequency — lives here.
 
 1. **Discoverable** — an agent would find this skill given only the user's natural request
 2. **Bounded** — states when NOT to use it, and when to stop
@@ -90,6 +116,7 @@ The seven-point gate. All must be "yes" before a skill ships. `SKILL.md` names t
 5. **Lean** — body within word target, depth in `references/`
 6. **Self-consistent** — the skill follows the rules it teaches (most commonly failed)
 7. **Positioned** — collisions with existing skills explicitly addressed in "Do Not Use When"
+8. **Proven** — if the skill ships a script or produces verifiable output, that output has been *executed* against adversarial fixtures and all pass — not merely reasoned about (see Eval Loop Requirements)
 
 ## Bulletproofing Requirements
 
@@ -104,6 +131,19 @@ Discipline skills only. `bulletproofing-guide.md` explains the techniques; this 
 - [ ] Each rationalization stated once (in the Rationalization Table); other sections reference it, never re-argue it
 - [ ] Includes a "deliver, don't lecture" instruction — state the rule once, then produce the compliant output and default to the safe pattern silently
 - [ ] **Re-tested after adding all bulletproofing — agent still complies**
+
+## Eval Loop Requirements
+
+Run in Phase 7. Proves the skill's *output* works, not just that the document is well-formed. `eval-loop.md` explains the technique and holds the adversarial-fixture catalog; this is the checklist. The eval method is type-conditional — satisfy the row matching what the skill produces.
+
+- [ ] **Script or verifiable output** — 8+ adversarial fixtures written (empty/blank, single element, delimiter-in-data, embedded newline, ragged, special chars, unicode/BOM, boundary numbers, type ambiguity); artifact **executed** against every fixture; all pass on a full re-run; failures fixed in the *skill*, never by editing the fixture to match buggy output
+- [ ] **Discipline skill** — covered by the Bulletproofing Requirements re-test above; not re-run here
+- [ ] **Reference skill** — a fresh agent performs 3 real lookups and applies each correctly
+- [ ] **Pure technique/workflow, no artifact** — a fresh agent dry-runs the Phase-1 trigger scenarios with no gaps or deviation
+- [ ] Iterated until a clean pass **plus** two consecutive probe rounds that surface no new failing case
+- [ ] Any input class left untested — and any non-obvious semantic decision the artifact makes on an ambiguous spec (sort order, tie-breaking, type coercion) — is named in the skill's Failure Modes (no silent coverage caps, no silent judgment calls)
+
+**Division of labor:** this loop owns *correctness* (does this artifact produce the right output on hard cases — qualitative, always-on, no harness). Quantitative pass-rate benchmarking and description-trigger optimization belong to `skill-creator:skill-creator`.
 
 ## Portability (Harness-Neutral)
 

@@ -105,6 +105,39 @@ description: >
 | Failure Modes | Teaches the agent when to STOP — prevents overreach | Codex |
 | Additional Resources | Makes supporting files discoverable | Opus, Gemini |
 
+## Writing Workflow Steps
+
+End every step on a **completion criterion** — the condition that tells the agent the step is done. Two properties make it bind:
+
+- **Checkable** — the agent can tell done from not-done. "All fixtures pass on a full re-run" is checkable; "the output looks right" is not.
+- **Exhaustive where thoroughness matters** — "every modified file accounted for" forces the digging; "produce a change list" invites stopping early.
+
+A vague criterion invites **premature completion**: the agent's attention slips from the work to *being done*, and the steps it can see ahead pull it forward. Defend in this order:
+
+1. **Sharpen the criterion first** — cheap and local. A checkable bound resists the pull no matter how many later steps are visible.
+2. **Split the sequence only if** the criterion is irreducibly fuzzy *and* the rush is actually observed — move the later steps behind a subagent dispatch or a follow-on skill so they leave the agent's view. Splitting on suspicion alone fragments the skill for nothing.
+
+## Writing Context Pointers
+
+Every entry in "Additional Resources" — and every inline file reference — is a **context pointer**: its *wording*, not its target, decides whether the agent ever loads the material. State when to load, not only what the target contains.
+
+| Weak pointer | Sharp pointer |
+|--------------|---------------|
+| "`references/eval-loop.md` — the eval loop" | "`references/eval-loop.md` — fixture catalog and stop condition. Load before writing any fixture." |
+
+A must-have target behind a weakly worded pointer is a variance bug: some runs load it, some don't. Fix the wording first; inline the material only if sharpening fails.
+
+## Supporting Directories
+
+Extract into these in Phase 3 — after drafting, never before.
+
+| Resource | When to Extract | Context Cost |
+|----------|----------------|--------------|
+| `scripts/` | Same code repeated across invocations; deterministic reliability needed | Near-zero (executed, sometimes read first for inspection) |
+| `references/` | Detailed docs, schemas, patterns > 500 words | On-demand only |
+| `assets/` | Templates, images, boilerplate copied into output | Zero (copied, not read) |
+| `examples/` | Complete, runnable demonstrations | On-demand only |
+
 ## Adapting the Template
 
 ### For Simple Technique Skills
