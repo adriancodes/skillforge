@@ -57,7 +57,7 @@ The six levers that decide whether an agent obeys a skill. Apply all six to ever
 Choose the invocation axis in Phase 1, before drafting. Each choice spends a different load; pick the cheaper one for how the skill actually fires.
 
 - **Model-invoked** (default) — the skill keeps a trigger `description`, so the agent fires it autonomously and other skills can reach it by name. Costs *context load*: the description is loaded into every conversation whether or not the skill fires. Choose when the agent must discover the skill from a natural user request.
-- **User-invoked** — set `disable-model-invocation: true` in frontmatter. Only the human typing the skill's name can fire it; zero context load, but the human must remember it exists (*cognitive load*). Choose when the skill only ever fires by explicit request (release rituals, personal checklists, meta-tools). The `description` becomes a human-facing one-liner; the Description Rules below do not apply.
+- **User-invoked** — set `disable-model-invocation: true` in frontmatter. Only the human typing the skill's name can fire it; zero context load, but the human must remember it exists (*cognitive load*). Choose when the skill only ever fires by explicit request (release rituals, personal checklists, meta-tools). The `description` becomes a human-facing one-liner; the Description Rules below do not apply. *Portability:* the flag is a Claude Code extension, not part of the open Agent Skills spec — in harnesses without it the skill stays model-invoked, so keep even the one-liner accurate as a trigger.
 - **Router skill** — when user-invoked skills multiply past easy recall, add one skill that names each and when to reach for it, so the human remembers one name instead of many.
 
 ## Description Rules
@@ -76,9 +76,20 @@ The authoritative description checklist for **model-invoked** skills (user-invok
 
 ## Naming
 
+**Spec constraints** (open Agent Skills spec, agentskills.io/specification): 1–64 characters; lowercase letters, numbers, and hyphens only; no leading or trailing hyphen; no consecutive hyphens; the name matches the parent directory name.
+
 **Required:** the name is functional and unambiguous — a request for what the skill does reliably matches it, with no semantic collision with an unrelated common meaning (e.g., `writing-skills` collides with writing *ability*; `creating-skills` does not).
 
 **Recommended:** verb-first active voice (`creating-X`, not `X-creator`). It sits closest to how requests are phrased and keeps a library consistent — but it is a convention, not a measured law. A functional, unambiguous noun name satisfies the requirement; verb-first is just the form that most reliably produces one.
+
+## Frontmatter Fields
+
+Per the open Agent Skills spec (agentskills.io/specification). Required: `name` (Naming above) and `description` (Description Rules above — skill-forge's 500-character cap sits inside the spec's 1,024 ceiling). Optional — include only when applicable:
+
+- `license` — license name, or the name of a bundled license file
+- `compatibility` — environment requirements (system packages, network access, intended product), max 500 characters. Declare it whenever a generated skill's scripts need specific tooling (git, Python 3.x, docker); most skills omit it
+- `metadata` — arbitrary string key-value map (author, version); use reasonably unique key names
+- `allowed-tools` — space-separated pre-approved tools. Experimental; support varies by harness
 
 ## Steps and Pointers
 
@@ -88,6 +99,7 @@ Rules for workflow steps and file references. `body-template.md` (Writing Workfl
 - [ ] Criteria that gate thoroughness are **exhaustive** ("every modified file accounted for", not "produce a change list")
 - [ ] Every context pointer states *when* to load its target, not only what the target contains
 - [ ] A must-have file behind an unreliable pointer is fixed by sharpening the pointer's wording first; the material is inlined only if sharpening fails
+- [ ] File references use relative paths and stay one level deep from SKILL.md — no nested reference chains (open-spec rule)
 
 ## Pruning
 

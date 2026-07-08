@@ -89,6 +89,8 @@ description: >
 - **`scripts/utility.sh`** — [What it does — can be executed without reading]
 ```
 
+Optional frontmatter per the open Agent Skills spec — `license`, `compatibility` (environment requirements like git or Python versions), `metadata`, `allowed-tools` (experimental) — is defined in `references/rules.md` (Frontmatter Fields). Add `compatibility` whenever the skill ships scripts with tooling dependencies.
+
 ## Section Rationale
 
 | Section | Why It Exists | Source |

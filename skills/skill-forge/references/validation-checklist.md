@@ -8,11 +8,11 @@ Run every item before finalizing a skill. A single "no" means the skill is not r
 
 - [ ] Skill lives in its own directory: `skill-name/SKILL.md`
 - [ ] SKILL.md has valid YAML frontmatter with `---` delimiters
-- [ ] Frontmatter contains `name` field (letters, numbers, hyphens only)
-- [ ] Frontmatter contains `description` field
-- [ ] Every file referenced in SKILL.md body actually exists
+- [ ] Frontmatter contains `name` and `description` fields; optional fields (`license`, `compatibility`, `metadata`, `allowed-tools`) appear only when applicable (`references/rules.md`, Frontmatter Fields)
+- [ ] Name meets every rule in `references/rules.md` (Naming) — including the open-spec constraints: lowercase, 1–64 chars, no leading/trailing/consecutive hyphens, matches the parent directory name
+- [ ] Every file referenced in SKILL.md body actually exists, via a relative path one level deep
 - [ ] No empty directories (only create directories with content)
-- [ ] Name follows `references/rules.md` (Naming) — functional and unambiguous; verb-first recommended, not required
+- [ ] If the `skills-ref` CLI is available, `skills-ref validate <skill-dir>` passes — a mechanical frontmatter/naming check; skip only when the tool is not installed
 
 ## Invocation
 
